@@ -1,8 +1,41 @@
 
-int choose_sound(int num);
-int red=8,green=7,blue=6,yellow=5,buzz=13,count=0,temp_rand,guess=0,chk=0;;
+#include "pitches.h"
+//melodies: 
+
+int melody_next[] = {
+
+  NOTE_C4, NOTE_G3, NOTE_G3, NOTE_A3, NOTE_G3, 0, NOTE_B3, NOTE_C4
+};
+int melody_lose[]={
+  
+  NOTE_FS4,NOTE_G3,0,NOTE_C2
+  
+};
+int melody_start[] = {
+
+  NOTE_C4, NOTE_B3, NOTE_A3, NOTE_B4, NOTE_A4, NOTE_C4, NOTE_G3, NOTE_C4
+};
+
+int noteDurations[] = {
+
+  4, 8, 8, 4, 4, 4, 4, 4
+}; 
+
+int red=8,green=7,blue=6,yellow=5,buzz=11,count=0,temp_rand,guess=0,chk=0;;
 int a[50]={0};
 int tone_red=8000,tone_blue=6000,tone_green=4000,tone_yellow=2000;
+
+
+//declaring functions:
+
+int choose_sound(int num);
+void green_noise();
+void yellow_noise();
+void blue_noise();
+void red_noise();
+void next_noise();
+void lose_noise();
+void start_noise();
 
 
 void setup() {
@@ -25,8 +58,11 @@ void loop() {
   }
   
   chk=Serial.parseInt();
+  start_noise();
   while(chk==1)
   {
+    
+    delay(500);
     game_turn();
     Serial.println("enter the color one by one(red-8,green-7,blue-6,yellow-5)");
     my_turn();
@@ -86,12 +122,14 @@ void my_turn()
     else
     {
       Serial.println("you lose!");
+      lose_noise();
       delay(1000);
       exit(1);
     }
     
     
   }
+  next_noise();
   Serial.println("good job! get ready for the next round!");
   delay(1000);
 }
@@ -129,7 +167,9 @@ void red_noise()
   digitalWrite(buzz,LOW);
   delayMicroseconds(tone_red-500);
   }
+    
 }
+
 void green_noise()
 {
   int i;
@@ -163,11 +203,80 @@ void yellow_noise()
   delayMicroseconds(tone_yellow);
   }
 }
+
 void next_noise()
 {
-  
+  for (int thisNote = 0; thisNote < 8; thisNote++) {
+
+    // to calculate the note duration, take one second divided by the note type.
+
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+
+    int noteDuration = 1000 / noteDurations[thisNote];
+
+    tone(buzz, melody_next[thisNote], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+
+    // the note's duration + 30% seems to work well:
+
+    int pauseBetweenNotes = noteDuration * 1.30;
+
+    delay(pauseBetweenNotes);
+
+    // stop the tone playing:
+
+    noTone(buzz);
+}
 }
 void lose_noise()
 {
-  
+  for (int thisNote = 0; thisNote < 4; thisNote++) {
+
+    // to calculate the note duration, take one second divided by the note type.
+
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+
+    int noteDuration = 1000 / noteDurations[thisNote];
+
+    tone(buzz, melody_lose[thisNote], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+
+    // the note's duration + 30% seems to work well:
+
+    int pauseBetweenNotes = noteDuration * 1.30;
+
+    delay(pauseBetweenNotes);
+
+    // stop the tone playing:
+
+    noTone(buzz);
+}
+}
+
+void start_noise()
+{
+  for (int thisNote = 0; thisNote < 8; thisNote++) {
+
+    // to calculate the note duration, take one second divided by the note type.
+
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+
+    int noteDuration = 1000 / noteDurations[thisNote];
+
+    tone(buzz, melody_start[thisNote], noteDuration);
+
+    // to distinguish the notes, set a minimum time between them.
+
+    // the note's duration + 30% seems to work well:
+
+    int pauseBetweenNotes = noteDuration * 1.30;
+
+    delay(pauseBetweenNotes);
+
+    // stop the tone playing:
+
+    noTone(buzz);
+}
 }
