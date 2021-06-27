@@ -1,4 +1,3 @@
-
 #include "pitches.h"
 //melodies: 
 
@@ -20,8 +19,10 @@ int noteDurations[] = {
 
   4, 8, 8, 4, 4, 4, 4, 4
 }; 
-
-int red=8,green=7,blue=6,yellow=5,buzz=11,count=0,temp_rand,guess=0,chk=0;;
+const int red=10,green=9,blue=8,yellow=7,buzz=11; 
+int count=0,temp_rand,guess=0,chk=0;
+int red_button=6,green_button=5,blue_button=4,yellow_button=3;
+int red_read=0,green_read=0,blue_read=0,yellow_read=0;
 int a[50]={0};
 int tone_red=8000,tone_blue=6000,tone_green=4000,tone_yellow=2000;
 
@@ -36,6 +37,8 @@ void red_noise();
 void next_noise();
 void lose_noise();
 void start_noise();
+bool button_pressed();
+int click_button();
 
 
 void setup() {
@@ -51,20 +54,26 @@ void setup() {
 
 void loop() {
   
-  Serial.println("enter 1 to begin!");
-  while(Serial.available()==0)
+  //Serial.println("enter 1 to begin!");
+  //while(Serial.available()==0)
+  //{
+    
+  //}
+  Serial.println("press any button to begin!");
+  while(!button_pressed())//running while no button was clicked
   {
     
   }
-  
-  chk=Serial.parseInt();
+  chk=1;
+  //chk=Serial.parseInt();
   start_noise();
   while(chk==1)
   {
     
     delay(500);
     game_turn();
-    Serial.println("enter the color one by one(red-8,green-7,blue-6,yellow-5)");
+    //Serial.println("enter the color one by one(red-10,green-9,blue-8,yellow-7)");
+    Serial.println("your turn!");
     my_turn();
     
   }
@@ -88,7 +97,7 @@ int i;
   delay(1000);
   
   }
-  a[count]=random(5,9);
+  a[count]=random(yellow,red+1);
   digitalWrite(a[count],HIGH);
   choose_sound(a[count]);
   delay(1000);
@@ -108,16 +117,24 @@ void my_turn()
   guess=0;
   while(guess<count)
   {
-    Serial.println("enter color");
-    while(Serial.available()==0);
-    {
+    //Serial.println("enter color");
+    //while(Serial.available()==0);
+    //{
 
+    //}
+    //num=Serial.parseInt();
+    while((num=click_button())==-1)//running as long as no button was clicked
+    {
     }
-    num=Serial.parseInt();
+    
     if(num==a[i])
     {
       guess++;
       i++;
+      digitalWrite(num,HIGH);
+      choose_sound(num);
+      digitalWrite(num,LOW);
+     
     }
     else
     {
@@ -129,6 +146,7 @@ void my_turn()
     
     
   }
+  delay(500);
   next_noise();
   Serial.println("good job! get ready for the next round!");
   delay(1000);
@@ -139,19 +157,19 @@ int choose_sound(int num)
 {
    switch(num)
   {
-    case(8):
+    case(red):
     {
       red_noise();
     }
-     case(7):
+     case(green):
     {
       green_noise();
     }
-     case(6):
+     case(blue):
     {
       blue_noise();
     }
-     case(5):
+     case(yellow):
     {
       yellow_noise();
     }
@@ -279,4 +297,51 @@ void start_noise()
 
     noTone(buzz);
 }
+}
+
+bool button_pressed()
+{
+  red_read=digitalRead(red_button);
+  green_read=digitalRead(green_button);
+  blue_read=digitalRead(blue_button);
+  yellow_read=digitalRead(yellow_button);
+  if(red_read==1||blue_read==1||green_read==1||yellow_read==1)
+  {
+    red_read=0;
+    blue_read=0;
+    green_read=0;
+    yellow_read=0;
+    return(true);
+  }
+  else
+  {
+    return(false);
+  }
+}
+int click_button()
+{
+  red_read=digitalRead(red_button);
+  green_read=digitalRead(green_button);
+  blue_read=digitalRead(blue_button);
+  yellow_read=digitalRead(yellow_button);
+   if(red_read==1)
+  {
+    return(red);
+  }
+   else if(green_read==1)
+  {
+      return(green);
+  }
+  else if(blue_read==1)
+  {
+     return(blue);
+  }
+  else if(yellow_read==1)
+  {
+    return(yellow);
+  }
+  else
+  {
+    return(-1);
+  }
 }
